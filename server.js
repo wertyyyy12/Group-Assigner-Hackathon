@@ -10,6 +10,16 @@ function on_connection(client) {
   console.log("New connection!");
   clients.push(client);
 
+  function broadcast(msg) {
+    for (var i = 0; i < clients.length; i++) {
+        var client = clients[i];
+
+        if (client.readyState == WebSocket.OPEN) { 
+            client.send(msg);
+        }
+    }
+}
+
   client.on("message", function onMessage(msg) {
       var messageObject = JSON.parse(msg); 
       console.log(messageObject);
@@ -26,6 +36,7 @@ function on_connection(client) {
         var currentSID = messageObject.sessionID;
         if (sessions[currentSID]) {
             sessions[currentSID].push(messageObject.studentName); //push the student name to the session id
+            broadcast("Update prefrences list");
         }
         else {
             console.log("This session doesn't exist!");
@@ -43,15 +54,7 @@ function on_connection(client) {
 });
 }
 
-function broadcast(msg) {
-    for (var i = 0; i < clients.length; i++) {
-        var client = clients[i];
 
-        if (client.readyState == WebSocket.OPEN) { 
-            client.send(msg);
-        }
-    }
-}
  
 server.on("connection", on_connection);
  

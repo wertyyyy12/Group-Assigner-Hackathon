@@ -1,2 +1,55 @@
-<input placeholder="Session ID" />
+<input id="sID" autocomplete="off" placeholder="Session ID" />
+<input id="studentName" autocomplete="off" placeholder="Student Name" />
 <button onclick="window.location.href = './initial.html';">Back</button>
+<button onclick="sendStudentData()">Submit</button>
+<p id="wait" style="display: none;">Please wait for the teacher to end the session.</p>
+
+<div id="studentPrefrences">
+    
+</div>
+
+<script>
+
+    var conn = new WebSocket("ws://localhost:3000");
+    var sID;
+    var studentName;
+    
+    conn.onmessage = function onMessage(msg) {
+        var message = msg;
+        if (message.charAt(0) == '/') {
+            message.replace('/', ''); //the message variable now contains the sID that is gonna end
+
+        }
+
+        if (message.charAt(0) == '|') {
+            message.replace('|', ''); //the message variable now contains a string array of students in that session ID
+        }
+
+    };
+
+    function getStudentsInSession() {
+        var sendData = {
+            "type": "Get",
+            "sessionID": sID
+        }
+
+        conn.send(JSON.stringify(sendData));
+    }
+    function sendStudentData() {
+        sID = document.getElementById("sID").value;
+        studentName = document.getElementById("studentName").value;
+        var sendData = {
+            "type": "Student",
+            "sessionID": sID,
+            "studentName": studentName
+        };
+
+        conn.send(JSON.stringify(sendData));
+
+        document.getElementById("sID").style.display = "none";
+        document.getElementById("studentName").style.display = "none";
+        document.getElementById("wait").style.display = "inline";
+
+
+    }
+</script>

@@ -1,0 +1,38 @@
+<div id="chatbox">
+    <ul id="chatMessages">
+    </ul>
+
+</div>
+
+<input id="message" placeholder="Message" />
+<input id="username" placeholder="Username" />
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    var conn = new WebSocket("ws://localhost:3000");
+
+    conn.onmessage = function onMessage(msg) {
+
+        console.log(msg);
+        //Process object
+        var recieveData = JSON.parse(msg.data);
+
+        var ul = document.getElementById("chatMessages");
+        var li = document.createElement("li");
+        var newMessage = `<p><b>${recieveData.username}:</b> ${recieveData.message}</p>`
+        li.innerHTML = newMessage;
+        li.appendChild(document.createTextNode(" "));
+        ul.appendChild(li);
+    };
+
+    function sendMessage() {
+        var message = document.getElementById("message").value;
+        var username = document.getElementById("username").value;
+        var sendData = {
+            "username": username,
+            "message": message
+        };
+
+        conn.send(JSON.stringify(sendData));
+    }
+</script>

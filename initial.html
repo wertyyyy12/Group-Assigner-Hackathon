@@ -1,2 +1,12 @@
-<button>Student</button>
-<button>Teacher</button>
+<button onclick="studentAuthorize()">Student</button>
+<button onclick="teacherAuthorize()">Teacher</button>
+
+<script>
+    function studentAuthorize() {
+        window.location.href = "./studentClient.html";
+    };
+
+    function teacherAuthorize() {
+        window.location.href = "./teacherClient.html";
+    };
+</script>

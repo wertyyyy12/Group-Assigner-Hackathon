@@ -1,11 +1,14 @@
 <input id="sID" autocomplete="off" placeholder="Session ID" />
 <input id="studentName" autocomplete="off" placeholder="Student Name" />
-<button onclick="window.location.href = './initial.html';">Back</button>
 <button onclick="sendStudentData()">Submit</button>
+<button onclick="window.location.href = './initial.html';">Back</button>
 <p id="wait" style="display: none;">Please wait for the teacher to end the session.</p>
-
+<br>
+<br>
+<h2 id="sPrefHeading" style="display: none;">Put a check next to students you would prefer to work with:</h2>
+<br>
 <div id="studentPrefrences">
-    
+
 </div>
 
 <script>
@@ -19,6 +22,7 @@
         console.log(message);
         if (message.charAt(0) == '/') {
             message.replace('/', ''); //the message variable now contains the sID that is gonna end
+            
 
         }
 
@@ -27,10 +31,15 @@
             var studentArray = JSON.parse(message);
             studentArray.shift();
             console.log(studentArray);
+            document.getElementById("studentPrefrences").innerHTML = "";
             studentArray.forEach(student => { //populate the checklist w/ student names from that session
                 document.getElementById("studentPrefrences").innerHTML += `<input type="checkbox" id="${student}" value="${student}"> <label for="${student}">${student}</label><br>`
             });
             
+        }
+
+        if (message == "Update prefrences list") {
+            getStudentsInSession();
         }
 
     };
@@ -57,6 +66,7 @@
         document.getElementById("sID").style.display = "none";
         document.getElementById("studentName").style.display = "none";
         document.getElementById("wait").style.display = "inline";
+        document.getElementById("sPrefHeading").style.display = "inline";
 
         getStudentsInSession();
 

@@ -4,7 +4,7 @@ const server = new WebSocket.Server({ port: 3000 });
  
 var clients = [];
 var sessions = {};
-var students = {};
+var prefrences = {};
 
 function on_connection(client) {
   console.log("New connection!");
@@ -22,14 +22,11 @@ function on_connection(client) {
 
   client.on("message", function onMessage(msg) {
       var messageObject = JSON.parse(msg); 
-      console.log(messageObject);
       msgType = messageObject.type;
-      console.log(msgType);
       if (msgType == "Teacher") {
           var currentSID = messageObject.sessionID;
           var currentGroupSize = messageObject.groupSize; 
           sessions[currentSID] = [currentGroupSize];
-          console.log(sessions);
       }
 
       if (msgType == "Student") {
@@ -41,11 +38,19 @@ function on_connection(client) {
         else {
             console.log("This session doesn't exist!");
         }
-        console.log(sessions);
       }
 
       if (msgType == "End") {
-          broadcast("/" + messageObject.sessionID); // "/" header to message = end session
+          var sendData = {
+              type: "End",
+              sessionID: messageObject.sessionID
+          }
+          broadcast(JSON.stringify(sendData)); // "/" header to message = end session
+          //prepare prefrences dictionary with key values of sessions
+          prefrences = sessions;
+          for (const [sID, prefs] of Object.entries(prefrences)) {
+            prefrences[sID] = "";
+          }
       }
 
       if (msgType == "Get") {

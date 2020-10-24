@@ -1,3 +1,4 @@
+const { stringify } = require("querystring");
 const WebSocket = require("ws");
  
 const server = new WebSocket.Server({ port: 3000 });
@@ -7,7 +8,7 @@ var sessions = {};
 var prefrences = {};
 
 function on_connection(client) {
-  console.log("New connection!");
+  console.log("New connection");
   clients.push(client);
 
   function broadcast(msg) {
@@ -33,7 +34,7 @@ function on_connection(client) {
         var currentSID = messageObject.sessionID;
         if (sessions[currentSID]) {
             sessions[currentSID].push(messageObject.studentName); //push the student name to the session id
-            broadcast("Update prefrences list");
+            broadcast("Update prefrences list|" + currentSID);
         }
         else {
             console.log("This session doesn't exist!");
@@ -45,7 +46,7 @@ function on_connection(client) {
               type: "End",
               sessionID: messageObject.sessionID
           }
-          broadcast(JSON.stringify(sendData)); // "/" header to message = end session
+          broadcast(JSON.stringify(sendData));
           //prepare prefrences dictionary with key values of sessions
           prefrences = sessions;
           for (const [sID, prefs] of Object.entries(prefrences)) {

@@ -38,7 +38,7 @@ function on_connection(client) {
       }
 
       if (msgType == "Get") {
-        client.send("|" + JSON.stringify(sessions[messageObject.sessionID]));
+        client.send(JSON.stringify(sessions[messageObject.sessionID]));
       }
 });
 }

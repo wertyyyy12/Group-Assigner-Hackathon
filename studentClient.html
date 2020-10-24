@@ -14,15 +14,23 @@
     var sID;
     var studentName;
     
-    conn.onmessage = function onMessage(msg) {
-        var message = msg;
+    conn.onmessage = function onMessage(msg) { //Handle messages from server
+        var message = msg.data;
+        console.log(message);
         if (message.charAt(0) == '/') {
             message.replace('/', ''); //the message variable now contains the sID that is gonna end
 
         }
 
-        if (message.charAt(0) == '|') {
-            message.replace('|', ''); //the message variable now contains a string array of students in that session ID
+        if (message.charAt(0) == '[') {
+            //the message variable now contains a string array of students in that session ID
+            var studentArray = JSON.parse(message);
+            studentArray.shift();
+            console.log(studentArray);
+            studentArray.forEach(student => { //populate the checklist w/ student names from that session
+                document.getElementById("studentPrefrences").innerHTML += `<input type="checkbox" id="${student}" value="${student}"> <label for="${student}">${student}</label><br>`
+            });
+            
         }
 
     };
@@ -50,6 +58,7 @@
         document.getElementById("studentName").style.display = "none";
         document.getElementById("wait").style.display = "inline";
 
+        getStudentsInSession();
 
     }
 </script>

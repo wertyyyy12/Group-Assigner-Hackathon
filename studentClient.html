@@ -1,2 +1,115 @@
-<input placeholder="Session ID" />
+<input id="sID" autocomplete="off" placeholder="Session ID" />
+<input id="studentName" autocomplete="off" placeholder="Student Name" />
+<button onclick="sendStudentData()">Submit</button>
 <button onclick="window.location.href = './initial.html';">Back</button>
+<p id="wait" style="display: none;">Please wait for the teacher to end the session.</p>
+<br>
+<br>
+<h2 id="sPrefHeading" style="display: none;">Put a check next to students you would prefer to work with:</h2>
+<br>
+<div id="studentPrefrences">
+
+</div>
+
+<script>
+
+    var conn = new WebSocket("ws://localhost:3000");
+    var sID;
+    var studentName;
+    
+    conn.onmessage = function onMessage(msg) { //Handle messages from server
+        var message = msg.data;
+        try {
+            var parsedMessage = JSON.parse(message);
+        }
+        catch (e) {
+            //nothing lol
+        }
+        console.log(message);
+        if (parsedMessage) {
+            if (parsedMessage.type == "End") {
+                //handle the end session data collection
+                console.log("we are ending");
+                document.getElementById("sPrefHeading").innerHTML = "This session has ended.";
+                document.getElementById("wait").innerHTML = "";
+                var studentData = [studentName, sID];
+                // var studentData = [];
+
+                function getDescendantElements(parent) {
+	                return [].slice.call(parent.getElementsByTagName('*'));
+                }
+
+                var inputsAsArray = [].slice.call(document.getElementsByTagName("INPUT"));
+                inputsAsArray.forEach(element => {
+                    console.log(element.checked);
+                    if (element.checked) {
+                        console.log("YAY!");
+                        console.log(element.value);
+                        studentData.push(element.value);
+                        console.log(studentData);
+                    }
+                });
+
+                var sendData = {
+                    "type": "StudentEnd",
+                    "studentData": studentData,
+                    
+                }
+
+                console.log(sendData);
+                conn.send(JSON.stringify(sendData));
+
+            }
+        }
+
+        if (message.charAt(0) == '[') {
+            //the message variable now contains a string array of students in that session ID
+            var studentArray = JSON.parse(message);
+            studentArray.shift();
+            console.log(studentArray);
+            document.getElementById("studentPrefrences").innerHTML = "";
+            studentArray.forEach(student => { //populate the checklist w/ student names from that session
+                document.getElementById("studentPrefrences").innerHTML += `<input type="checkbox" id="${student}" value="${student}"> <label for="${student}">${student}</label><br>`
+            });
+            
+        }
+
+        console.log(sID);
+        if (message.startsWith("Update prefrence list")) {
+            message = message.replace("Update prefrence list|", "");
+            if (message == sID) {
+                getStudentsInSession();
+            }
+        }
+
+    };
+
+    function getStudentsInSession() {
+        var sendData = {
+            "type": "Get",
+            "sessionID": sID
+        }
+
+        conn.send(JSON.stringify(sendData));
+    }
+    function sendStudentData() {
+        sID = document.getElementById("sID").value;
+        studentName = document.getElementById("studentName").value;
+        console.log(sID, studentName);
+        var sendData = {
+            "type": "Student",
+            "sessionID": sID,
+            "studentName": studentName
+        };
+
+        conn.send(JSON.stringify(sendData));
+
+        document.getElementById("sID").style.display = "none";
+        document.getElementById("studentName").style.display = "none";
+        document.getElementById("wait").style.display = "inline";
+        document.getElementById("sPrefHeading").style.display = "inline";
+
+        getStudentsInSession();
+
+    }
+</script>

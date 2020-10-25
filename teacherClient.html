@@ -1,6 +1,36 @@
-<input placeholder="Session ID" />
-<input placeholder="Max Group Size" />
-<button onclick="startSession()">Submit</button>
-
+<input id="sID" autocomplete="off" placeholder="Session ID" />
+<input id="groupSize" autocomplete="off" placeholder="Max Group Size" />
+<button onclick="sendTeacherData()">Submit</button>
 <button onclick="window.location.href = './initial.html';">Back</button>
+<button id="End" style="display: none;" onclick="EndSession()">End Session</button>
+
+<script>
+    var conn = new WebSocket("ws://localhost:3000");
+    var sID;
+
+    function sendTeacherData() {
+        sID = document.getElementById("sID").value;
+        var groupSize = document.getElementById("groupSize").value;
+        var sendData = {
+            "type": "Teacher",
+            "sessionID": sID,
+            "groupSize": groupSize
+        };
+
+        conn.send(JSON.stringify(sendData));
+
+        var endButton = document.getElementById("End");
+        endButton.style.display = "inline";
+    }
+
+    function EndSession() {
+        var sendData = {
+            "type": "End",
+            "sessionID": sID
+        };
+        conn.send(JSON.stringify(sendData));
+    }
+
+
+</script>
 

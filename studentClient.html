@@ -10,6 +10,14 @@
 <div id="studentPrefrences">
 
 </div>
+<h3>Groups:</h3>
+<p id="1"></p>
+<p id="2"></p>
+<p id="3"></p>
+<p id="4"></p>
+
+
+
 
 <script>
 
@@ -53,11 +61,14 @@
                 var sendData = {
                     "type": "StudentEnd",
                     "studentData": studentData,
-                    
                 }
+
 
                 console.log(sendData);
                 conn.send(JSON.stringify(sendData));
+
+
+
 
             }
         }

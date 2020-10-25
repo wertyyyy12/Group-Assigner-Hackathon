@@ -99,6 +99,7 @@ function sorting(preferences, max) {
 	}
 	return (groups.value);
 }
+/*
 var group = {
 	'Alexis Ng': ['Tyberious Slayton', 'Isabella Slayton'],
 	'Tyberious Slayton': ['Alexis Ng'],
@@ -110,7 +111,7 @@ var group = {
 	'Matthew Kin': []
 }
 console.log(sorting(group, 4));
-
+*/
 
 //    # selected is a hashmap with the names of the student who were selected as keys and the students they were selected by as values
 //    #select people picked 1 time and go from there

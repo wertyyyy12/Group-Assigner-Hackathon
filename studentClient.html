@@ -19,11 +19,47 @@
     
     conn.onmessage = function onMessage(msg) { //Handle messages from server
         var message = msg.data;
+        try {
+            var parsedMessage = JSON.parse(message);
+        }
+        catch (e) {
+            //nothing lol
+        }
         console.log(message);
-        if (message.type == "End") {
-            document.getElementById("sPrefHeading").innerHTML = "This session has ended."
+        if (parsedMessage) {
+            if (parsedMessage.type == "End") {
+                //handle the end session data collection
+                console.log("we are ending");
+                document.getElementById("sPrefHeading").innerHTML = "This session has ended.";
+                document.getElementById("wait").innerHTML = "";
+                var studentData = [studentName, sID];
+                // var studentData = [];
 
+                function getDescendantElements(parent) {
+	                return [].slice.call(parent.getElementsByTagName('*'));
+                }
 
+                var inputsAsArray = [].slice.call(document.getElementsByTagName("INPUT"));
+                inputsAsArray.forEach(element => {
+                    console.log(element.checked);
+                    if (element.checked) {
+                        console.log("YAY!");
+                        console.log(element.value);
+                        studentData.push(element.value);
+                        console.log(studentData);
+                    }
+                });
+
+                var sendData = {
+                    "type": "StudentEnd",
+                    "studentData": studentData,
+                    
+                }
+
+                console.log(sendData);
+                conn.send(JSON.stringify(sendData));
+
+            }
         }
 
         if (message.charAt(0) == '[') {
@@ -38,8 +74,12 @@
             
         }
 
-        if (message.startsWith("Update prefrences list")) {
-            getStudentsInSession();
+        console.log(sID);
+        if (message.startsWith("Update prefrence list")) {
+            message = message.replace("Update prefrence list|", "");
+            if (message == sID) {
+                getStudentsInSession();
+            }
         }
 
     };
@@ -55,6 +95,7 @@
     function sendStudentData() {
         sID = document.getElementById("sID").value;
         studentName = document.getElementById("studentName").value;
+        console.log(sID, studentName);
         var sendData = {
             "type": "Student",
             "sessionID": sID,

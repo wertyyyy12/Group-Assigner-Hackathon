@@ -1,4 +1,4 @@
-# Group-Assigner-Hackathon
+# Hackathon Submission
 Automatic creation of student groups based on student prefrences
 
 # Created by

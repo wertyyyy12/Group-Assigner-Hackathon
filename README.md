@@ -1,4 +1,4 @@
-# Group-Assginer
+# Group-Assigner-Hackathon
 Automatic creation of student groups based on student prefrences
 
 # Created by
